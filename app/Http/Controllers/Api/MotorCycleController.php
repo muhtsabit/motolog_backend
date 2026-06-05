@@ -8,14 +8,23 @@ use Illuminate\Support\Facades\DB;
 
 class MotorCycleController extends Controller {
     
-    // Cek & Ambil data motor berdasarkan User ID Google
+   // GANTI FUNGSI INDEX LAMA LU DENGAN INI DI SEBELAH BACKEND LARAVEL:
     public function index($user_id) {
-        $motor = DB::table('motorcycles')->where('user_id', $user_id)->get();
-        
-        // Mengembalikan array list motor (kosong [] jika user baru belum input motor)
-        return response()->json($motor, 200);
-    }
+        // 1. Ambil semua data motor milik user
+        $motorcycles = DB::table('motorcycles')->where('user_id', $user_id)->get();
 
+        foreach ($motorcycles as $motor) {
+            // 2. Ambil data kilometer terakhir dari tabel component_histories untuk motor ini
+            $components = DB::table('component_histories')
+                ->where('motorcycle_id', $motor->id)
+                ->pluck('last_service_km', 'component_name'); // Menghasilkan format: ["Oli Mesin" => 2000, "Busi" => 10000]
+
+            // 3. Bungkus ke dalam key component_last_services agar dibaca reaktif oleh Flutter
+            $motor->component_last_services = $components->isEmpty() ? (object)[] : $components;
+        }
+        
+        return response()->json($motorcycles, 200);
+    }
     // Menyimpan data dari form onboarding MotoLog
     public function store(Request $request) {
         $request->validate([
