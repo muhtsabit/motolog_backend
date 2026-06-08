@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ServiceController;
+use App\Http\Controllers\Api\MotorCycleController;
 
 Route::post('/login-google', [AuthController::class, 'loginWithGoogle']);
 Route::post('/login', [AuthController::class, 'login']);    
@@ -13,6 +14,9 @@ Route::post('/motorcycles', [App\Http\Controllers\Api\MotorCycleController::clas
 Route::match(['post', 'patch'], '/motorcycles/{id}/km', [App\Http\Controllers\Api\MotorCycleController::class, 'updateKm']);
 Route::post('/services', [ServiceController::class, 'store']);
 Route::get('/services/{motorcycle_id}', [ServiceController::class, 'show']);
+Route::put('/motorcycles/{id}', [MotorCycleController::class, 'update']);
+Route::delete('/motorcycles/{id}', [MotorCycleController::class, 'destroy']);
+Route::post('/user/fcm-token', [AuthController::class, 'updateFcmToken']);
 
 Route::post('/logout', [App\Http\Controllers\Api\MotorCycleController::class, 'logout']);
 Route::get('/user', function (Request $request) {

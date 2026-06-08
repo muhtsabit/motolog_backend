@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -106,5 +107,40 @@ class AuthController extends Controller
             'status' => 'success',
             'user'   => $user,
         ], 200);
+    }
+
+    public function updateFcmToken(Request $request)
+    {
+        $request->validate([
+            'user_id'   => 'required|integer',
+            'fcm_token' => 'required|string',
+        ]);
+
+        try {
+            $affected = DB::table('users')
+                ->where('id', $request->user_id)
+                ->update([
+                    'fcm_token'  => $request->fcm_token,
+                    'updated_at' => now(),
+                ]);
+
+            if ($affected === 0) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'User tidak ditemukan!'
+                ], 404);
+            }
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'FCM Token berhasil disinkronkan!'
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Gagal simpan token: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
