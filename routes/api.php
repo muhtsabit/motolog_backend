@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\MotorCycleController;
+use App\Http\Controllers\Api\NotificationController;
 
 Route::post('/login-google', [AuthController::class, 'loginWithGoogle']);
 Route::post('/login', [AuthController::class, 'login']);    
@@ -17,6 +18,10 @@ Route::get('/services/{motorcycle_id}', [ServiceController::class, 'show']);
 Route::put('/motorcycles/{id}', [MotorCycleController::class, 'update']);
 Route::delete('/motorcycles/{id}', [MotorCycleController::class, 'destroy']);
 Route::post('/user/fcm-token', [AuthController::class, 'updateFcmToken']);
+
+Route::get('/notifications/{userId}', [NotificationController::class, 'index']);
+Route::post('/notifications/read/{id}', [NotificationController::class, 'markAsRead']);
+Route::post('/notifications/read-all/{userId}', [NotificationController::class, 'markAllAsRead']);
 
 Route::post('/logout', [App\Http\Controllers\Api\MotorCycleController::class, 'logout']);
 Route::get('/user', function (Request $request) {
